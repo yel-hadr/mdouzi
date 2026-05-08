@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/yel-hadr/yel-hadr
+    repoURL: https://github.com/yel-hadr/mdouzi
     targetRevision: HEAD
     path: .
 
