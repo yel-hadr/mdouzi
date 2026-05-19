@@ -17,7 +17,7 @@ spec:
 
   syncPolicy:
     automated:
-      prune: true              # removes resources deleted from repo
-      selfHeal: true           # reverts manual kubectl changes
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true

@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+echo "[INFO] Installing dependencies..."
+apt-get update -qq
+apt-get install -y -qq curl
+
+
 echo "[INFO] Installing Docker..."
 if command -v docker >/dev/null 2>&1; then
   echo "[INFO] Docker is already installed - skipping"
@@ -23,7 +28,7 @@ if command -v kubectl >/dev/null 2>&1; then
 else
   curl -LO "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   chmod +x kubectl
-  sudo mv kubectl /usr/local/bin/kubectl
+  mv kubectl /usr/local/bin/kubectl
 fi
 
 echo "[INFO] Installing K3d..."
@@ -64,8 +69,7 @@ kubectl wait --for=condition=available \
   --timeout=300s
 
 echo "[INFO] Applying Argo CD Application config..."
-SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-kubectl apply -f "$SCRIPT_DIR/confs/application.yaml"
+kubectl apply -f /vagrant/confs/application.yaml
 
 echo ""
 echo "[INFO] Setup complete!"
