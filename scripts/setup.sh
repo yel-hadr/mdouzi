@@ -40,14 +40,23 @@ if k3d cluster list | grep -q "^iotcluster\b" 2>/dev/null; then
   echo "[INFO] k3d cluster 'iotcluster' already exists - skipping creation"
 else
   k3d cluster create iotcluster \
+    --api-port "127.0.0.1:6550" \
     --port "8888:8888@loadbalancer"
 fi
 
+echo "[INFO] Selecting K3d kubeconfig context..."
+k3d kubeconfig merge iotcluster --kubeconfig-switch-context
+kubectl config set-cluster k3d-iotcluster --server=https://127.0.0.1:6550 >/dev/null
+
 echo "[INFO] Waiting for cluster to be ready..."
-until kubectl get nodes 2>/dev/null | grep -q "Ready"; do
-  echo "   still waiting..."
-  sleep 5
-done
+if ! kubectl wait --for=condition=Ready node --all --timeout=120s; then
+  echo "[ERROR] Kubernetes node did not become Ready in time."
+  echo "[INFO] Current nodes:"
+  kubectl get nodes -o wide || true
+  echo "[INFO] kube-system pods:"
+  kubectl get pods -n kube-system -o wide || true
+  exit 1
+fi
 
 echo "[INFO] Creating namespaces..."
 kubectl get namespace argocd >/dev/null 2>&1 || kubectl create namespace argocd
