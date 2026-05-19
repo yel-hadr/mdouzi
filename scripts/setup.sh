@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")/.." && pwd)"
+
 echo "[INFO] Installing dependencies..."
 apt-get update -qq
 apt-get install -y -qq curl
@@ -13,13 +15,8 @@ else
   curl -fsSL https://get.docker.com | sh
 fi
 
-if id -u vagrant >/dev/null 2>&1; then
-  usermod -aG docker vagrant
-  if [ "$(id -un)" = "vagrant" ]; then
-    newgrp docker || true
-  fi
-else
-  echo "[WARN] user 'vagrant' not found; skipping usermod/newgrp"
+if [ -n "${SUDO_USER:-}" ] && [ "${SUDO_USER}" != "root" ] && id -u "${SUDO_USER}" >/dev/null 2>&1; then
+  usermod -aG docker "${SUDO_USER}"
 fi
 
 echo "[INFO] Installing kubectl..."
@@ -69,7 +66,7 @@ kubectl wait --for=condition=available \
   --timeout=300s
 
 echo "[INFO] Applying Argo CD Application config..."
-kubectl apply -f /vagrant/confs/application.yaml
+kubectl apply -f "${SCRIPT_DIR}/confs/application.yaml"
 
 echo ""
 echo "[INFO] Setup complete!"

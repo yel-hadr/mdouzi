@@ -31,7 +31,7 @@ p3/
 - `scripts/setup.sh` installs Docker, kubectl, and K3d when missing, creates the
   `iotcluster` K3d cluster, creates namespaces, installs Argo CD, and applies the
   Argo CD Application manifest.
-- `scripts/setup_server.sh` currently performs the same setup as `setup.sh`.
+- `scripts/setup_server.sh` is a compatibility wrapper around `setup.sh`.
 - `confs/application.yaml` tells Argo CD to sync the application from the public
   GitHub repository.
 - `deployment.yaml` is the Kubernetes deployment and service for
@@ -75,6 +75,17 @@ The script creates a K3d cluster named `iotcluster` and maps the application por
 ```text
 localhost:8888 -> cluster load balancer port 8888
 ```
+
+## Run With Docker
+
+From the repository root, you can also use the shared Docker runner:
+
+```bash
+docker compose run --rm p3
+```
+
+The runner mounts `/var/run/docker.sock` from the host VM, so Docker must already
+be installed and running on that VM.
 
 ## Useful Checks
 
