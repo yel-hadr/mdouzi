@@ -25,13 +25,11 @@ p3/
 |   +-- application.yaml
 +-- scripts/
     +-- setup.sh
-    +-- setup_server.sh
 ```
 
 - `scripts/setup.sh` installs Docker, kubectl, and K3d when missing, creates the
   `iotcluster` K3d cluster, creates namespaces, installs Argo CD, and applies the
   Argo CD Application manifest.
-- `scripts/setup_server.sh` is a compatibility wrapper around `setup.sh`.
 - `confs/application.yaml` tells Argo CD to sync the application from the public
   GitHub repository.
 - `deployment.yaml` is the Kubernetes deployment and service for
